@@ -41,8 +41,8 @@ class DataTransformer:
             ])
             categorical_transformer = Pipeline(steps=[
                 ('imputer', SimpleImputer(strategy='most_frequent')),
-                ('onehot', OneHotEncoder(handle_unknown='ignore')),
-                ('scaler', StandardScaler())  # Note: StandardScaler does not support sparse matrices
+                ('onehot', OneHotEncoder()),
+                ('scaler', StandardScaler(with_mean=False))  # Note: StandardScaler does not support sparse matrices
             ])
 
             logging.info(f"Numerical features: {numerical_features}")
@@ -77,7 +77,10 @@ class DataTransformer:
             target_feature_test_df = test_df[target_column_name]
 
             logging.info("Applying transformations")
-            
+
+            input_features_train_df = preprocessing_obj.fit_transform(input_features_train_df)
+            input_features_test_df = preprocessing_obj.transform(input_features_test_df)
+
             train_arr = np.c_[input_features_train_df, np.array(target_feature_train_df)]
             test_arr = np.c_[input_features_test_df, np.array(target_feature_test_df)]
 
